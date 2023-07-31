@@ -50,8 +50,26 @@ test('a valid blog can be added ', async () => {
   expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
 
   const titles = blogsAtEnd.map((b) => b.title);
-  console.log(titles)
   expect(titles).toContain(
     'Async/Await',
   );
+});
+
+test('blog likes set to 0 if undefined', async () => {
+  const newBLog = {
+    title: 'Async/Await',
+    author: 'Michael Mayers',
+    url: 'https://Await.com/',
+  };
+
+  await api
+    .post('/api/blogs')
+    .send(newBLog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+
+  const blogsAtEnd = await helper.blogsInDb();
+
+  const addedBlog = blogsAtEnd.find((b) => b.title === 'Async/Await');
+  expect(addedBlog.likes).toBe(0);
 });
