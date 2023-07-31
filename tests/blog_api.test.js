@@ -24,3 +24,34 @@ test('all blogs are returned', async () => {
 
   expect(response.body).toHaveLength(helper.initialBlogs.length);
 });
+
+test('blog indetification field is called id', async () => {
+  const response = await api.get('/api/blogs');
+  const blogs = response.body.map((r) => r);
+
+  expect(blogs[0].id).toBeDefined();
+});
+
+test('a valid blog can be added ', async () => {
+  const newBLog = {
+    title: 'Async/Await',
+    author: 'Michael Mayers',
+    url: 'https://Await.com/',
+    likes: 22,
+  };
+
+  await api
+    .post('/api/blogs')
+    .send(newBLog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
+
+  const titles = blogsAtEnd.map((b) => b.title);
+  console.log(titles)
+  expect(titles).toContain(
+    'Async/Await',
+  );
+});
