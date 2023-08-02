@@ -3,6 +3,7 @@ const supertest = require('supertest');
 const app = require('../app');
 const helper = require('./test_helper');
 const Blog = require('../models/blog');
+const { after } = require('lodash');
 
 const api = supertest(app);
 
@@ -72,4 +73,23 @@ test('blog likes set to 0 if undefined', async () => {
 
   const addedBlog = blogsAtEnd.find((b) => b.title === 'Async/Await');
   expect(addedBlog.likes).toBe(0);
+});
+
+test('blog without title or url is not added', async () => {
+  const newBLog = {
+    title: 'Async/Await',
+    author: 'Michael Mayers',
+  };
+
+  await api
+    .post('/api/blogs')
+    .send(newBLog)
+    .expect(400);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
+});
+
+afterAll(async () => {
+  await mongoose.connection.close();
 });
