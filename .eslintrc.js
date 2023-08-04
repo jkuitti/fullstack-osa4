@@ -23,5 +23,6 @@ module.exports = {
   },
   rules: {
     'arrow-body-style': ['error', 'as-needed'],
+
   },
 };
